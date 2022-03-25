@@ -1,6 +1,9 @@
 package org.factchecker.webapp.domain;
 
+import org.hibernate.validator.constraints.Length;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "message")
@@ -10,6 +13,8 @@ public class Message {
     @Column(name = "id")
     private Long id;
 
+    @NotBlank(message = "Поле не должно быть пустым")
+    @Length(max = 2048, message = "Текст слишком длинный")
     @Column(name = "text")
     private String text;
 
@@ -20,8 +25,12 @@ public class Message {
     @JoinColumn(name = "user_id")
     private User author;
 
+    @Column(name = "filename")
+    private String filename;
+
     public Message() {
     }
+
 
     public Message(String text, String tag, User user) {
         this.author = user;
@@ -63,5 +72,13 @@ public class Message {
 
     public void setAuthor(User author) {
         this.author = author;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 }

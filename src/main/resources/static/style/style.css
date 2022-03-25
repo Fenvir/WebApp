@@ -1,6 +1,7 @@
 div.auth_hello {
-    margin-top: 200px;
+    position: relative;
     margin: auto;
-    width: 300px;
-    border: 1px solid red;
+    width: 350px;
+    text-align: center;
+    font-size: 20px;
 }

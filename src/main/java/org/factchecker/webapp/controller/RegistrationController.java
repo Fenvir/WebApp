@@ -1,20 +1,20 @@
 package org.factchecker.webapp.controller;
 
-import org.factchecker.webapp.domain.Role;
 import org.factchecker.webapp.domain.User;
-import org.factchecker.webapp.repos.IUserRepo;
+import org.factchecker.webapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import java.util.Collections;
 import java.util.Map;
 
 @Controller
 public class RegistrationController {
     @Autowired
-    private IUserRepo iUserRepo;
+    private UserService userService;
 
     @GetMapping("/registration")
     public String registration() {
@@ -23,9 +23,7 @@ public class RegistrationController {
 
     @PostMapping("/registration")
     public String addUser(User user, Map<String, Object> model) {
-        User userFromDB = iUserRepo.findByUsername(user.getUsername());
-
-        if (userFromDB != null) {
+        if (!userService.addUser(user)) {
             model.put("message", "Пользователь с таким именем уже существует!");
             return "registration";
         }
@@ -40,11 +38,20 @@ public class RegistrationController {
             return "registration";
         }
 
-        user.setActive(true);
-        user.setRoles(Collections.singleton(Role.USER));
-        iUserRepo.save(user);
-
         return "redirect:/index";
+    }
+
+    @GetMapping("/activate/{code}")
+    public String activate(Model model, @PathVariable String code) {
+        boolean isActivated = userService.activateUser(code);
+
+        if (isActivated) {
+            model.addAttribute("message", "Пользователь активирован");
+        } else {
+            model.addAttribute("message", "Код активации не найден");
+        }
+
+        return "/login";
     }
 
 }
